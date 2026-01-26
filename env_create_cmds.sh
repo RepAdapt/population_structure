@@ -1,0 +1,33 @@
+unset PYTHONPATH
+unset PYTHONHOME
+
+bash Anaconda3-2025.12-1-Linux-x86_64.sh
+# set to /home/b.lind/anaconda3_2025
+
+conda config --add channels conda-forge
+conda config --add channels bioconda
+
+# pop_struct env - python pipeline
+conda create -n pop_struct python=3.12.2 --yes
+conda activate pop_struct
+pip install numpy pandas matplotlib session_info matplotlib_venn ipyparallel cartopy tqdm paramiko pdf2image seaborn geopandas notebook jupyterlab_widgets ipywidgets
+
+# lea_bigsnpr - LEA, bigsnpr, PLINK
+conda create -n lea_bigsnpr -c conda-forge \
+r-base=4.1.* \
+r-essentials \
+r-biocmanager \
+r-remotes \
+r-data.table \
+r-rcpp \
+libgomp \
+plink -y
+
+conda activate lea_bigsnpr
+conda install bioconductor-lea=3.6.0
+
+Rscript -e 'install.packages("bigsnpr", repos=c("https://privefl.r-universe.dev","https://cloud.r-project.org"))'
+
+# bcftools
+bcftools 1.23
+conda create -n bcftools bioconda::bcftools
