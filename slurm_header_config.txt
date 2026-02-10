@@ -1,0 +1,6 @@
+# add sbatch header flags that are necessary for your cluster
+# eg
+# #SBATCH --partition=general
+# #SBATCH --qos=general
+#
+# lines starting with #SBATCH (not '# #SBATCH') will be used
