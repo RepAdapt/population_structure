@@ -59,7 +59,7 @@ output_path <- args[2]
 cpus <- as.integer(args[3])
 setwd(output_path)
 
-source(sprintf('%s/pop_struct/LEA_config.R', Sys.getenv('HOME'))  # args for snp_autoSVD
+source(sprintf('%s/pop_struct/LEA_config.R', Sys.getenv('HOME')))  # args for snp_autoSVD
 
 cat(sprintf('\nINFO [%s] vcf = %s\n', Sys.time(), vcf))
 
@@ -216,7 +216,7 @@ big_svd <- snp_autoSVD(
     thr.r2=thr_r2,        # sourced from LEA_config.R
     size=size,            # sourced from LEA_config.R
     min.maf=min_maf,      # sourced from LEA_config.R - should be redundant because of upstream filtering
-    # roll.size=roll_size,  # sourced from LEA_config.R - for debugging
+    #roll.size=10,  # sourced from LEA_config.R - for debugging
 )
 
 
@@ -245,7 +245,7 @@ cat(sprintf('\nINFO [%s] wrote thinned snp data to : %s\n', Sys.time(), thinned_
 # 8. ADMIXTURE ANALYSIS ON THIN SNP DATASET - PLOT AND SAVE ANCESTRY PROPORTIONS
 cat(sprintf('\nINFO [%s] running smnf on thinned imputed snps\n', Sys.time()))
 
-thinimp_proj_and_best_k_results <- choose_k(lfmm_file, Kvals=proj_and_best_k_results$bestK, project='new', CPU=cpus)
+thinimp_proj_and_best_k_results <- choose_k(thinned_lfmm, Kvals=proj_and_best_k_results$bestK, project='new', CPU=cpus)
 
 ## plot ancestry proportions
 # ancestry_pdf <- sprintf("%s_imputed_maf-filtered_thinned_ancestry.pdf", name)
