@@ -7,7 +7,7 @@ For any questions - contact Brandon Lind - lind.brandon.m@gmail.com
 
     1. symlink the repo to your home directory: `ln -s /path/to/population_structure $HOME/pop_struct`
 
-1. Install conda environments using a recent Anaconda version - eg Anaconda3-2025.12-1-Linux-x86_64.sh from the repo. 
+1. Install conda environments using a recent Anaconda version - eg Anaconda3-2025.12-1-Linux-x86_64.sh - you can get this by logging into Anaconda.com and clicking on Distribution. 
 
     `bash Anaconda3-2025.12-1-Linux-x86_64.sh` - no need to initialize it in your ~/.bashrc.
 
