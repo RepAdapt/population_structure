@@ -26,7 +26,7 @@ For any questions - contact Brandon Lind - lind.brandon.m@gmail.com
 
 1. If populations are discrete, create a file with two columns - the first is sample names, the second is a **numerical** population ID that will be used for hierfstat. In these cases use the --discrete flag to point to the file when starting the pipeline.
 
-1. To start the pipeline (after sourcing `conda_init.sh`) run the following
+1. To start the pipeline (after sourcing `conda_init.sh` again) run the following
 
     ```bash
     conda activate pop_struct
