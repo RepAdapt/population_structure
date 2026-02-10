@@ -27,9 +27,10 @@ Rscript -e 'install.packages("bigsnpr", repos=c("https://privefl.r-universe.dev"
 
 ## bcftools
 bcftools 1.23
-conda create -n bcftools bioconda::bcftools
+conda create -n bcftools bioconda::bcftools --yes
 
 ## lostruct
-conda create -n lostruct -c conda-forge r-devtools r-data.table
+conda create -n lostruct -c conda-forge r-devtools r-data.table --yes
 conda activate lostruct
 R -e "devtools::install_github('petrelharp/local_pca/lostruct')"
+
