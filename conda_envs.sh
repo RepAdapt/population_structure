@@ -1,5 +1,5 @@
 git clone git@github.com:brandonlind/pythonimports.git
-#ln -s pythonimports $HOME/pythonimports
+ln -s pythonimports $HOME/pythonimports
 
 unset PYTHONPATH
 unset PYTHONHOME
