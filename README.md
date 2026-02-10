@@ -47,6 +47,8 @@ For any questions - contact Brandon Lind - lind.brandon.m@gmail.com
 
                 - to alter variables used for thinning, edit LEA_config.
 
+     Note that even if not run on a slurm system, the script will still create the commands needed to run in the OUTDIR/shfiles directory.
+
 1. At the end of each job, you can cat the slurm.out file for more information regarding outputs. See also Notes in docstring of hierfstat.R.
 
     `cat slurm_jobid.out | grep INFO`
