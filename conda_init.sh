@@ -12,3 +12,8 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
+
+if [ -d "$HOME/pythonimports" ]; then
+    export PYTHONPATH="$HOME/pythonimports:$PYTHONPATH"
+fi
+

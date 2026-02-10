@@ -1,3 +1,6 @@
+git clone git@github.com:brandonlind/pythonimports.git
+ln -s pythonimports $HOME/pythonimports
+
 unset PYTHONPATH
 unset PYTHONHOME
 
@@ -33,4 +36,3 @@ conda create -n bcftools bioconda::bcftools --yes
 conda create -n lostruct -c conda-forge r-devtools r-data.table --yes
 conda activate lostruct
 R -e "devtools::install_github('petrelharp/local_pca/lostruct')"
-
