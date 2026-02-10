@@ -67,7 +67,7 @@ bcftools view -S keep.samples -m2 -M2 -v snps -Ou {vcf} \
 | bcftools +fill-tags -Ou -- -t F_MISSING \
 | bcftools view -i 'F_MISSING<=0.10' -Ou -o {job}.vcf
 
-tabix -p vcf {job}.vcf
+# tabix -p vcf {job}.vcf
 
 date
 
@@ -76,7 +76,7 @@ echo SUBMIT_IMPUTATION
 
 conda activate pop_struct
 
-python $HOME/code/GitHub/population_structure/PopStruct_02_impute_filter_thin.py {job}.vcf {outdir} {is_discrete}
+python $HOME/pop_struct/PopStruct_02_impute_filter_thin.py {job}.vcf {outdir} {is_discrete}
 
 date
 
