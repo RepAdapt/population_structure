@@ -48,14 +48,17 @@ samp_to_pop_file <- args[2]
 thinned_snps <- read.table(thinned_snp_file)
 
 samp_to_pop <- read.table(samp_to_pop_file, header=T)
-stopifnot(all(samp_to_pop[,1] == rownames(thinned_snps)))  # assert sample order
+stopifnot(is.numeric(samp_to_pop[ ,2]))  # assert numeric pop IDs
+stopifnot(all(rownames(thinned_snps) %in% samp_to_pop[ ,1]))  # assert samp names present
+samp_idx <- match(rownames(thinned_snps), samp_to_pop[, 1])
+samp_to_pop <- samp_to_pop[samp_idx[!is.na(samp_idx)],  , drop = FALSE]  # reorder, given samp names in samp_to_pop
+stopifnot(all(samp_to_pop[ ,1] == rownames(thinned_snps)))  # assert sample order and full sample name set
 
 ## metadata
 name <- sub("\\.(txt)$", "", basename(thinned_snp_file), perl = TRUE)
 
 
 # 2. ADD IN SNP AND SAMPLE NAMES
-thinned_snps[, 'pop'] <- samp_to_pop[,2]
 snp_data <- data.frame(pop=samp_to_pop[,2], thinned_snps, check.names=FALSE)
 
 
