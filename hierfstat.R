@@ -29,9 +29,6 @@
 # 4. CALCULATE PAIRWISE FST
 # 5. CALCULATE AVERAGED STATS
 #
-# TODO
-# ----
-# make sure samps from samptopop are coerced to be same order as how I'm pulling them - allow for subset of samps
 ##########################################################
 
 library(hierfstat)
