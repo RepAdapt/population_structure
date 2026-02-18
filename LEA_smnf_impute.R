@@ -4,6 +4,7 @@
 #
 # Usage
 # -----
+# conda activate lea_bigsnpr
 # Rscript LEA_smnf_impute.R vcf_path output_path cpus
 #
 # Parameters
@@ -24,12 +25,19 @@
 # - after running, cat either the slurm.out file or manually created output file for useful information:
 #     cat output | grep INFO
 # - admixture figures are available for before and after thinning
+# - this script will explore K up to 12 - if this needs adjustment, the colors in make_ancestry_plot also need to be updated
 # 
 # Assumed
 # -------
 # .bim, .bam, .fam files created in output_path from:
 #    `plink --vcf basename.vcf --make-bed --out basename --keep-allele-order --allow-extra-chr`
 #    in this pipeline, the plink command this is run upstream (see PopStruct_02_impute_filter_thin.py)
+# LEA_config.R
+#    this file contains adjustable variables for input to snp_autoSVD (thr_r2, size, min_maf)
+#
+# After running
+# -------------
+# double check the ce_vs_k.pdf figure for input snps (k used for imputation) and imputed/maf-filtered/thinned snps (k used for ancestry proportions)
 #
 # Outline
 # -------
@@ -60,7 +68,7 @@ output_path <- args[2]
 cpus <- as.integer(args[3])
 setwd(output_path)
 
-source(sprintf('%s/pop_struct/LEA_config.R', Sys.getenv('HOME')))  # args for snp_autoSVD
+source(sprintf('%s/pop_struct/LEA_config.R', Sys.getenv('HOME')))  # args for snp_autoSVD and snmf
 
 cat(sprintf('\nINFO [%s] vcf = %s\n', Sys.time(), vcf))
 
@@ -72,14 +80,14 @@ fam <- read.table(sprintf('%s.fam', name))
 bim <- read.table(sprintf("%s.bim", name), stringsAsFactors = FALSE)
 
 ## functions
-choose_k <- function(LFMM_file, Kvals=1:10, reps=10, project="new", CPU=1){
+choose_k <- function(LFMM_file, Kvals=1:12, reps=10, project="new", CPU=1){
     ################################################################################################
     # 
     # Estimate individual ancestry coefficients and ancestral allele frequencies.
     #
     # Parameters
     # ----------
-    # lfmm_file : path
+    # LFMM_file : path
     #    path to data in .lfmm format
     # Kvals : vector
     #    vector of k values to evaluate
@@ -108,7 +116,7 @@ choose_k <- function(LFMM_file, Kvals=1:10, reps=10, project="new", CPU=1){
 
     # make figure of ce vs k
     colnames(ce_mat) <- Kvals
-    figname <- sprintf('%s_ce_vs_k.pdf', strsplit(lfmm_file, '.lfmm')[[1]])
+    figname <- sprintf('%s_ce_vs_k.pdf', strsplit(LFMM_file, '.lfmm')[[1]])
 
     df <- stack(as.data.frame(ce_mat))
     lev <- levels(df$ind)

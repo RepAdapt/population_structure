@@ -13,7 +13,7 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-if [ -d "$HOME/pythonimports" ]; then
-    export PYTHONPATH="$HOME/pythonimports:$PYTHONPATH"
+if [ -d "$HOME/pop_struct/pythonimports" ]; then
+    export PYTHONPATH="$HOME/pop_struct/pythonimports:$PYTHONPATH"
 fi
 
