@@ -46,6 +46,7 @@
 
 library(LEA)
 library(bigsnpr)
+library(ggplot2)
 
 print(sessionInfo())
 
@@ -105,6 +106,38 @@ choose_k <- function(LFMM_file, Kvals=1:10, reps=10, project="new", CPU=1){
     
     cat(sprintf("INFO [%s] best K = %s (run %s)\n", Sys.time(), bestK, best_run_idx))
 
+    # make figure of ce vs k
+    colnames(ce_mat) <- Kvals
+    figname <- sprintf('%s_ce_vs_k.pdf', strsplit(lfmm_file, '.lfmm')[[1]])
+
+    df <- stack(as.data.frame(ce_mat))
+    lev <- levels(df$ind)
+
+    pdf(figname)
+    p <- ggplot(df, aes(ind, values, color = ind == lev[bestK])) +
+        geom_boxplot(fill = NA, size = 0.6, outlier.shape = 16, key_glyph = "point") +
+        scale_color_manual(
+            values = c(`FALSE` = "grey70", `TRUE` = "black"),
+            breaks = "TRUE",
+            labels = "lowest cross-entropy median",
+            name = NULL
+        ) +
+        guides(color = guide_legend(override.aes = list(shape = 15, size = 5))) +
+        labs(x = "K", y = "Cross\nEntropy") +
+        theme_bw() +
+        theme(
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            legend.position = c(0.98, 0.98),
+            legend.justification = c("right", "top"),
+            legend.background = element_rect(fill = "white", colour = NA),
+            legend.key = element_rect(fill = "white", colour = NA),
+            axis.title.y = element_text(angle = 0, vjust = 0.5)  # <-- horizontal y title
+        )
+    print(p)
+    dev.off()
+    cat(sprintf("INFO [%s] CE vs K figure saved to: %s\n", Sys.time(), figname))
+    
     return(list(proj = proj, bestK = bestK, best_run_idx = best_run_idx))
 }
 
@@ -245,7 +278,7 @@ cat(sprintf('\nINFO [%s] wrote thinned snp data to : %s\n', Sys.time(), thinned_
 # 8. ADMIXTURE ANALYSIS ON THIN SNP DATASET - PLOT AND SAVE ANCESTRY PROPORTIONS
 cat(sprintf('\nINFO [%s] running smnf on thinned imputed snps\n', Sys.time()))
 
-thinimp_proj_and_best_k_results <- choose_k(thinned_lfmm, Kvals=proj_and_best_k_results$bestK, project='new', CPU=cpus)
+thinimp_proj_and_best_k_results <- choose_k(thinned_lfmm, project='new', CPU=cpus)
 
 ## plot ancestry proportions
 # ancestry_pdf <- sprintf("%s_imputed_maf-filtered_thinned_ancestry.pdf", name)
@@ -253,14 +286,14 @@ thinimp_proj_and_best_k_results <- choose_k(thinned_lfmm, Kvals=proj_and_best_k_
 make_ancestry_plot(
     file_basename = sprintf("%s_imputed_maf-filtered_thinned_ancestry", name),
     proj = thinimp_proj_and_best_k_results$proj,
-    K = proj_and_best_k_results$bestK,  # use K from unimputed SNPs
+    K = thinimp_proj_and_best_k_results$bestK,
     run = thinimp_proj_and_best_k_results$best_run_idx
 )
 
 ## save final ancestry proportions
 anc_props <- Q(
     thinimp_proj_and_best_k_results$proj,
-    K = proj_and_best_k_results$bestK,  # use K from unimputed SNPs
+    K = thinimp_proj_and_best_k_results$bestK,
     run = thinimp_proj_and_best_k_results$best_run_idx
 )
 row.names(anc_props) <- fam[, 'V1']  # add sample names to rows of PC loadings
