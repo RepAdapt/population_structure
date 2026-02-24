@@ -18,6 +18,7 @@ After starting the pipeline (see Usage), the following will be executed (submitt
             1. A genotypes .txt file with rownames for samples and column names is saved (suffix: imputed_maf-filtered.txt)
         1. bigsnpr::snp_autoSVD is used to LD prune loci (including long-range LD)
             1. A new K is dynamically chosen for this imputed/thinned SNP set
+                1. a K vs. CE plot is generated saved for post hoc evaluation (suffix: imputed_maf-filtered_thinned_ce_vs_k.pdf)
             1. PCA coordinates are estimated and saved with rownames for samples and column names for PC (suffix: imputed_maf-filtered_thinned_pcs.txt)
             1. A genotypes .txt file with rownames for samples and column names is saved (suffix: imputed_maf-filtered_thinned.txt)
             1. Ancestry proportions are estimated/saved using the output from LD pruned loci
