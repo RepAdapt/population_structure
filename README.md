@@ -10,6 +10,7 @@ After starting the pipeline (see Usage), the following will be executed (submitt
 1. Population structure is estimated (across several scripts, via a bash script created by PopStruct_02_impute_filter_thin.py)
     1. PLINK creates bim, bed, and fam files for locus and sample labelling within internal scripts that follow
     1. LEA_smnf_impute.R
+        1. R^2 threshold (default = 0.2), SNP window size (default = 100 / thr.r2 = 500 if thr.r2 = 0.2), and MAF threshold (default = 0.01) can be edited in the LEA_config.R file
         1. Dynamically choose K (explore K = 1-12) based on minimum cross-entropy via LEA::snmf using the filtered vcf in Step 1
             1. a K vs. CE plot is generated/saved for post hoc evaluation (suffix: ce_vs_k.pdf)
             1. an ancestry plot with the chosen K is generated/saved (suffix: ancestry_unimputed.pdf)
