@@ -15,7 +15,7 @@ After starting the pipeline (see Usage), the following will be executed (submitt
             1. an ancestry plot with the chosen K is generated/saved (suffix: ancestry_unimputed.pdf)
         1. Impute missing data using LEA::impute using best K from previous step
         1. Loci with MAF < 0.01 are removed
-            1. A genotypes .txt file with rownames for samples and column names is saved (suffix: imputed_maf-filtered.txt)
+            1. A genotypes .txt file with samples for rownames and loci for column names is saved (suffix: imputed_maf-filtered.txt)
         1. bigsnpr::snp_autoSVD is used to LD prune loci (including long-range LD)
             1. A new K is dynamically chosen for this imputed/thinned SNP set
                 1. a K vs. CE plot is generated saved for post hoc evaluation (suffix: imputed_maf-filtered_thinned_ce_vs_k.pdf)
