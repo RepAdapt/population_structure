@@ -38,7 +38,7 @@ def main(vcf, output_path, is_discrete, threads=32):
         hierfstat_text += f'''echo HIERFSTAT
 conda activate hierfstat
 
-Rscript $HOME/code/GitHub/hierfstat.R {basename}_imputed_maf-filtered.txt {is_discrete}
+Rscript $HOME/pop_struct/hierfstat.R {basename}_imputed_maf-filtered.txt {is_discrete}
 
 date
 '''
