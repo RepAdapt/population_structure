@@ -54,7 +54,7 @@ cd {outdir}
 echo COMPUTE_IND_MISSINGNESS
 
 bcftools stats -s - {vcf} \
-| awk '/^PSC/ {{nNonMissing=$5; nSites=$6; miss=(nSites-nNonMissing)/nSites; if(miss<=0.10) print $3}}' \
+| awk '/^PSC/ {nMissing=$14; total=$4+$5+$6+$14; miss=(total? nMissing/total : 0); if (miss<=0.10) print $3}' \
 > keep.samples
 
 date
