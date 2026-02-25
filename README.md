@@ -17,11 +17,11 @@ After starting the pipeline (see Usage), the following will be executed (submitt
         1. Loci with MAF < 0.01 are removed
             1. A genotypes .txt file with samples for rownames and loci for column names is saved (suffix: imputed_maf-filtered.txt)
         1. bigsnpr::snp_autoSVD is used to LD prune loci (including long-range LD)
-            1. A new K is dynamically chosen for this imputed/thinned SNP set
-                1. a K vs. CE plot is generated saved for post hoc evaluation (suffix: imputed_maf-filtered_thinned_ce_vs_k.pdf)
             1. PCA coordinates are estimated and saved with rownames for samples and column names for PC (suffix: imputed_maf-filtered_thinned_pcs.txt)
             1. A genotypes .txt file with rownames for samples and column names is saved (suffix: imputed_maf-filtered_thinned.txt)
-            1. Ancestry proportions are estimated/saved using the output from LD pruned loci
+            1. A new K is dynamically chosen for this imputed/thinned SNP set
+                1. a K vs. CE plot is generated saved for post hoc evaluation (suffix: imputed_maf-filtered_thinned_ce_vs_k.pdf)
+            1. Ancestry proportions are estimated/saved using the output from LD pruned loci and K chosen in previous step
                 1. Proportions saved (suffix: imputed_maf-filtered_thinned_ancestry_proportions.txt)
                 1. A corresponding ancestry plot is generated (suffix: imputed_maf-filtered_thinned_ancestry.pdf)
     1. lostruct.R - using imputed + maf-filtered loci
