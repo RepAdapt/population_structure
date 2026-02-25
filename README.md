@@ -90,7 +90,8 @@ After starting the pipeline (see Usage), the following will be executed (submitt
 # Usage
 
 ```
-usage: PopStruct_00_start_pipeline.py --vcf VCF -o OUTDIR [-h] [--discrete SAMP_TO_POP]
+conda activate pop_struct
+usage: python PopStruct_00_start_pipeline.py --vcf VCF -o OUTDIR [-h] [--discrete SAMP_TO_POP]
 
 RepAdapt population structure pipeline.
 
