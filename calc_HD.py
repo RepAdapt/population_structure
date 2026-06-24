@@ -31,11 +31,11 @@ def get_het_depths(vcf, tmpfile):
     """
     reader = vcfpy.Reader.from_path(vcf)
     lines = []
-    snp_counter = 1
+    snp_counter = 0
     for snp in reader:
+        snp_counter += 1
         if snp_counter % 1000 == 0:
             print('snps processed =', snp_counter)
-        snp_counter += 1
         
         if not snp.is_snv() or len(snp.ALT) > 1 or len(snp.ALT[0].value) > 1:  # must be a snv, biallelic, and not multinucleotide
             continue
