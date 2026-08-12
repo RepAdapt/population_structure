@@ -9,12 +9,8 @@ Parameters
 vcf : str | Path
     path to input vcf. can be .gz or unzipped
 outdir : str | Path
-    path to directory for saving dataframe txt file.
-    basename of `vcf` is used as basename of output txt file.
-
-Notes
------
-Writes a tab-delimited dataframe to /outdir/vcf_basename.txt
+    path to directory for saving figure PDFs.
+    basename of pdf is used as prefix to basename of PDFs.
 """
 import os
 import sys
@@ -22,6 +18,9 @@ import vcfpy
 import pandas as pd
 from scipy.stats import binom
 from collections import Counter
+
+# create function to get allele balance
+# modified from https://datadryad.org/resource/doi:10.5061/dryad.cm08m
 
 def get_het_depths(vcf, tmpfile):
     """Get allele depth stats from heterozygote individuals for specific loci of interest.
