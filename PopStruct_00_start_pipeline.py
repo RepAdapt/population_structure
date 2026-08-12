@@ -1,8 +1,26 @@
 """Start population structure pipeline.
 
+Help
+----
+apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+  conda run -n pop_struct \
+  python $HOME/pop_struct/PopStruct_00_start_pipeline.py
+
 Usage
 -----
-python PopStruct_00_start_pipeline.py --vcf VCF -o OUTDIR [-h] [--discrete SAMP_TO_POP]
+#python PopStruct_00_start_pipeline.py --vcf VCF -o OUTDIR [-h] [--discrete SAMP_TO_POP]
+module load apptainer
+
+sif=$HOME/pop_struct/population-structure.sif
+
+jobfile=$(
+  apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+    conda run -n pop_struct \
+    python $HOME/pop_struct/PopStruct_00_start_pipeline.py --vcf VCF -o OUTDIR [-h] [--discrete SAMP_TO_POP] \
+)
+
+cd $(dirname $jobfile) && sbatch $jobfile
+
 
 
 """

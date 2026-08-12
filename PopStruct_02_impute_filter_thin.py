@@ -4,7 +4,18 @@ Input VCF assumed to be filtered for missing individuals and missing data.
 
 Usage
 -----
-python PopStruct_02_impute_filter_thin.py vcf output_path is_discrete
+#python PopStruct_02_impute_filter_thin.py vcf output_path is_discrete
+module load apptainer
+
+sif=$HOME/pop_struct/population-structure.sif
+
+jobfile=$(
+    apptainer exec -B "$HOME/pop_struct,/scratch:/scratch" $sif \
+        conda run -n pop_struct \
+        python PopStruct_02_impute_filter_thin.py vcf output_path is_discrete
+)
+
+cd $(dirname $jobfile) && sbatch $jobfile
 
 Paramters
 ---------
@@ -36,14 +47,17 @@ def main(vcf, output_path, is_discrete, threads=32):
     hierfstat_text = ''
     if is_discrete != 'not_discrete':
         hierfstat_text += f'''echo HIERFSTAT
-conda activate hierfstat
-
-Rscript $HOME/pop_struct/hierfstat.R {basename}_imputed_maf-filtered.txt {is_discrete}
+#conda activate hierfstat
+#Rscript $HOME/pop_struct/hierfstat.R {basename}_imputed_maf-filtered.txt {is_discrete}
+cd {output_path}
+apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+    conda run -n hierfstat \
+    Rscript $HOME/pop_struct/hierfstat.R {basename}_imputed_maf-filtered.txt {is_discrete}
 
 date
 '''
 
-    text = f'''#!/bin/bash
+    text = fr'''#!/bin/bash
 #SBATCH --job-name={job}
 #SBATCH --time=12:00:00
 #SBATCH --mem=50000M
@@ -59,26 +73,40 @@ echo PLINK
 
 cd {output_path}
 
-source $HOME/pop_struct/conda_init.sh
-conda activate lea_bigsnpr
+#source $HOME/pop_struct/conda_init.sh
+#conda activate lea_bigsnpr
+#plink --vcf {vcf} --make-bed --out {basename} --keep-allele-order --allow-extra-chr
 
-plink --vcf {vcf} --make-bed --out {basename} --keep-allele-order --allow-extra-chr
+module load apptainer
 
+sif=$HOME/pop_struct/population-structure.sif
+
+apptainer exec -B "$HOME/pop_struct,/scratch:/scratch" $sif \
+    conda run -n lea_bigsnpr \
+    plink --vcf {vcf} --make-bed --out {basename} --keep-allele-order --allow-extra-chr --set-missing-var-ids @:# --double-id
 date
 
 
 echo IMPUTE
 
-Rscript $HOME/pop_struct/LEA_smnf_impute.R {vcf} {output_path} {threads}
+#Rscript $HOME/pop_struct/LEA_smnf_impute.R {vcf} {output_path} {threads}
+apptainer exec -B "$HOME/pop_struct,/scratch:/scratch" $sif \
+    env R_LIBS_USER="" R_LIBS="" \
+    conda run --no-capture-output -n lea_bigsnpr \
+    Rscript $HOME/pop_struct/LEA_smnf_impute.R {vcf} {output_path} {threads}
 
 date
 
 
 echo LOSTRUCT
 
-conda activate lostruct
+#conda activate lostruct
+#Rscript $HOME/pop_struct/lostruct.R {basename}_imputed_maf-filtered.txt
 
-Rscript $HOME/pop_struct/lostruct.R {basename}_imputed_maf-filtered.txt
+apptainer exec -B "$HOME/pop_struct,/scratch:/scratch" $sif \
+    env R_LIBS_USER="" R_LIBS="" \
+    conda run -n lea_bigsnpr \
+    Rscript $HOME/pop_struct/lostruct.R {basename}_imputed_maf-filtered.txt
 
 date
 
@@ -89,7 +117,8 @@ date
     shfile = f'{output_path}/shfiles/{job}.sh'
     with open(shfile, 'w') as o:
         o.write(text)
-    sbatch(shfile)
+    # sbatch(shfile)
+    print(shfile)
 
     pass
 
