@@ -35,7 +35,7 @@ the basename of the vcf file (eg basename.vcf) is used as a prefix for output fi
 from pythonimports import *
 
 def main(vcf, output_path, is_discrete, threads=32):
-    output_path = return op.abspath(outdir)  # in case it's a relative path
+    output_path = op.abspath(outdir)  # in case it's a relative path
 
     if not vcf.endswith('.vcf'):
         raise Exception('Input VCF must be uncompressed (and end with .vcf)')
