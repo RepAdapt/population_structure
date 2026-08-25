@@ -25,7 +25,7 @@ outdir : Path
     path to output directory
 is_discrete : 'not_discrete' | Path
     If populations are considered discrete, a path is specified to a file with the first column as the individual ID, and
-    second column as the **numeric** population ID - this will run hierfstat in PopStruct_02_impute_filter_thin.py.
+    second column as the **numeric** population ID - Column names are arbitrary but must be included.
     Otherwise, hierfstat is not run - if not a path the default should be 'not_discrete'.
 
 Notes
