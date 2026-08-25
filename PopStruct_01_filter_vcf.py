@@ -40,6 +40,8 @@ TODO
 from pythonimports import *
 
 def main(vcf, outdir, is_discrete):
+    outdir = op.abspath(outdir)  # in case it's a relative path
+    
     basename = op.basename(vcf).split('.vcf')[0]
 
     job = f'{basename}_filtered'
@@ -67,7 +69,7 @@ cd {outdir}
 
 echo COMPUTE_IND_MISSINGNESS
 
-apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+apptainer exec -B "$HOME,{outdir}:{outdir}" $sif \
     conda run -n bcftools \
     bcftools stats -s - {vcf} \
     | awk '/^PSC/ {{nMissing=$14; total=$4+$5+$6+$14; miss=(total? nMissing/total : 0); if (miss<=0.10) print $3}}' \
@@ -79,7 +81,7 @@ date
 echo FILTER_INDS
 
 # keep only SNPs with a min and max number of alleles = 2
-apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+apptainer exec -B "$HOME,{outdir}:{outdir}" $sif \
     conda run -n bcftools \
     bcftools view -S keep.samples -m2 -M2 -v snps -Ou {vcf} \
     | bcftools +fill-tags -Ou -- -t F_MISSING \
@@ -97,7 +99,7 @@ echo SUBMIT_IMPUTATION
 #python $HOME/pop_struct/PopStruct_02_impute_filter_thin.py {job}.vcf {outdir} {is_discrete}
 
 jobfile=$(
-  apptainer exec -B "$HOME/pop_struct,/scratch:/scratch" $sif \
+  apptainer exec -B "$HOME/pop_struct,{outdir}:{outdir}" $sif \
     conda run -n pop_struct \
     python $HOME/pop_struct/PopStruct_02_impute_filter_thin.py {job}.vcf {outdir} {is_discrete} | grep '\.sh$' | tail -n1
 )
