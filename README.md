@@ -40,32 +40,29 @@ After starting the pipeline (see Usage), the following will be executed (submitt
 
     1. symlink the repo to your home directory: `ln -s /path/to/population_structure $HOME/pop_struct`
 
-1. Install conda environments using a recent Anaconda version - eg Anaconda3-2025.12-1-Linux-x86_64.sh - you can get this by logging into Anaconda.com and clicking on Distribution. 
+1. Pull the environment container from apptainer
 
-    `bash Anaconda3-2025.12-1-Linux-x86_64.sh` - no need to initialize it in your ~/.bashrc.
-
-    1. In the pipeline's `conda_init.sh` - edit and replace the path to your conda installation (likely `/your/home/anaconda3`).
-
-    1. Source the pipeline's `conda_init.sh` to initialize Anaconda.
-
-    1. Create needed environments.
-
-        ```bash
-        chmod +x conda_envs.sh
-        ./conda_envs.sh
-        ```
+    1. Set working directory to the pop_struct repo then load an apptainer module: `cd $HOME/pop_struct && module load apptainer`
+    1. If you have not previously pulled or pushed with apptainer, you need to register.
+        1. First create a personal access token from GitHub: https://github.com/settings/tokens
+        1. Then `apptainer registry login --username [your github username] oras://ghcr.io`
+    1. Then pull the container into the pop_struct repo folder
+        1. `apptainer pull population-structure.sif oras://ghcr.io/brandonlind/pop_struct_container:latest`
 
 1. If your slurm system requires specialized #SBATCH flags (like `--partition` etc), add them to `slurm_header_config.txt`
 
 1. If populations are discrete, create a file with two columns - the first is sample names (same as in the unfiltered VCF), the second is a **numerical** population ID that will be used for hierfstat. In these cases use the --discrete flag to point to the file when starting the pipeline. Sample order does not matter - these are reorganized within the hierstat.R script to match genetic data. There are also several sanity checks (`stopifnot`) in the hierfstat.R script regarding sample set and order.
 
-1. To start the pipeline (after sourcing `conda_init.sh` again) run the following
+1. To start the pipeline run the following
 
     ```bash
-    conda activate pop_struct
-    python PopStruct_00_start_pipeline.py --vcf VCF -o OUTDIR [-h] [--discrete SAMP_TO_POP]
-    # see help menu for further info:
-    python PopStruct_00_start_pipeline.py -h
+    # In the following command, "/scratch" is the output directory (or a parent of the output directory).
+        # Just paste your output directory twice for your usage (/path/to/outdir:/path/to/outdir)
+        # You only have to specify this upon launch of PopStruct_00_start_pipeline.py and the pipeline will dynamically infer this for remaining commands
+    module load apptainer
+    apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+    conda run -n pop_struct \
+    python $HOME/pop_struct/PopStruct_00_start_pipeline.py -h
     ```
 
     The pipeline will:
@@ -91,7 +88,10 @@ After starting the pipeline (see Usage), the following will be executed (submitt
 
 ```
 conda activate pop_struct
-usage: python PopStruct_00_start_pipeline.py --vcf VCF -o OUTDIR [-h] [--discrete SAMP_TO_POP]
+usage (see this section for more info about binding directories: To start the pipeline run the following):
+  apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+    conda run -n pop_struct \
+    python $HOME/pop_struct/PopStruct_00_start_pipeline.py -h
 
 RepAdapt population structure pipeline.
 
