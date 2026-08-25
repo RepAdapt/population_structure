@@ -59,16 +59,19 @@ def main(vcf, outdir, is_discrete):
 hostname
 date
 
-source $HOME/pop_struct/conda_init.sh
-conda activate bcftools
+module load apptainer
+
+sif=$HOME/pop_struct/population-structure.sif
 
 cd {outdir}
 
 echo COMPUTE_IND_MISSINGNESS
 
-bcftools stats -s - {vcf} \
-| awk '/^PSC/ {{nMissing=$14; total=$4+$5+$6+$14; miss=(total? nMissing/total : 0); if (miss<=0.10) print $3}}' \
-> keep.samples
+apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+    conda run -n bcftools \
+    bcftools stats -s - {vcf} \
+    | awk '/^PSC/ {{nMissing=$14; total=$4+$5+$6+$14; miss=(total? nMissing/total : 0); if (miss<=0.10) print $3}}' \
+    > keep.samples
 
 date
 
@@ -76,9 +79,11 @@ date
 echo FILTER_INDS
 
 # keep only SNPs with a min and max number of alleles = 2
-bcftools view -S keep.samples -m2 -M2 -v snps -Ou {vcf} \
-| bcftools +fill-tags -Ou -- -t F_MISSING \
-| bcftools view -i 'F_MISSING<=0.10' -Ou -o {job}.vcf
+apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+    conda run -n bcftools \
+    bcftools view -S keep.samples -m2 -M2 -v snps -Ou {vcf} \
+    | bcftools +fill-tags -Ou -- -t F_MISSING \
+    | bcftools view -i 'F_MISSING<=0.10' -Ou -o {job}.vcf
 
 # tabix -p vcf {job}.vcf
 
@@ -90,10 +95,6 @@ echo SUBMIT_IMPUTATION
 #conda activate pop_struct
 
 #python $HOME/pop_struct/PopStruct_02_impute_filter_thin.py {job}.vcf {outdir} {is_discrete}
-
-module load apptainer
-
-sif=$HOME/pop_struct/population-structure.sif
 
 jobfile=$(
   apptainer exec -B "$HOME/pop_struct,/scratch:/scratch" $sif \
