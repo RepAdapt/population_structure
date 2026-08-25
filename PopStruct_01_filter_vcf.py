@@ -6,18 +6,18 @@ This will filter the VCF in the following order (not concurrently):
 
 Usage
 -----
-# python PopStruct_01_bcftools_filter.py vcf outdir is_discrete
-module load apptainer
-
-sif=$HOME/pop_struct/population-structure.sif
-
-jobfile=$(
-    apptainer exec -B "$HOME,/scratch:/scratch" $sif \
-        conda run -n pop_struct \
-        python $HOME/pop_struct/PopStruct_01_bcftools_filter.py vcf outdir is_discrete
-)
-
-cd $(dirname $jobfile) && sbatch $jobfile
+In the following command, "/scratch:/scratch" is an upper directory relative to OUTDIR
+    module load apptainer
+    
+    sif=$HOME/pop_struct/population-structure.sif
+    
+    jobfile=$(
+        apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+            conda run -n pop_struct \
+            python $HOME/pop_struct/PopStruct_01_bcftools_filter.py vcf outdir is_discrete
+    )
+    
+    cd $(dirname $jobfile) && sbatch $jobfile
 
 Parameters
 ----------
