@@ -1,16 +1,8 @@
 """Start population structure pipeline.
 
-Help
-----
-In the following command, "/scratch:/scratch" is an upper directory relative to OUTDIR
-
-  apptainer exec -B "$HOME,/scratch:/scratch" $sif \
-    conda run -n pop_struct \
-    python $HOME/pop_struct/PopStruct_00_start_pipeline.py -h
-
 Usage
 -----
-In the following command, "/scratch:/scratch" is an upper directory relative to OUTDIR
+In the following command, "/scratch" is the output directory (or a parent of the OUTDIR directory)
 
   module load apptainer
   
@@ -24,7 +16,17 @@ In the following command, "/scratch:/scratch" is an upper directory relative to 
   
   cd $(dirname $jobfile) && sbatch $jobfile
   
+Help
+----
+In the following command, "/scratch" is the output directory (or a parent of the OUTDIR directory)
 
+  module load apptainer
+
+  sif=$HOME/pop_struct/population-structure.sif
+
+  apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+    conda run -n pop_struct \
+    python $HOME/pop_struct/PopStruct_00_start_pipeline.py -h
 
 """
 from pythonimports import *  # github.com/brandonlind/pythonimports
