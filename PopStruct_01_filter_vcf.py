@@ -82,10 +82,14 @@ echo FILTER_INDS
 
 # keep only SNPs with a min and max number of alleles = 2
 apptainer exec -B "$HOME,{outdir}:{outdir}" $sif \
-    conda run -n bcftools \
+    bash -c '
+    source /opt/conda/etc/profile.d/conda.sh
+    conda activate bcftools
+    
     bcftools view -S keep.samples -m2 -M2 -v snps -Ou {vcf} \
     | bcftools +fill-tags -Ou -- -t F_MISSING \
-    | bcftools view -i 'F_MISSING<=0.10' -Ou -o {job}.vcf
+    | bcftools view -i "F_MISSING<=0.10" -Ou -o {job}.vcf
+'
 
 # tabix -p vcf {job}.vcf
 
@@ -93,10 +97,6 @@ date
 
 
 echo SUBMIT_IMPUTATION
-
-#conda activate pop_struct
-
-#python $HOME/pop_struct/PopStruct_02_impute_filter_thin.py {job}.vcf {outdir} {is_discrete}
 
 jobfile=$(
   apptainer exec -B "$HOME/pop_struct,{outdir}:{outdir}" $sif \
