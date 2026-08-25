@@ -52,7 +52,7 @@ After starting the pipeline (see Usage), the following will be executed (submitt
 1. If your slurm system requires specialized #SBATCH flags (like `--partition` etc), add them to `slurm_header_config.txt`
     1. **this includes email for alerts and specific alert types** - see slurm_header_config.txt for template
 
-1. If populations are discrete, create a file with two columns - the first is sample names (same as in the unfiltered VCF), the second is a **numerical** population ID that will be used for hierfstat. In these cases use the --discrete flag to point to the file when starting the pipeline. Sample order does not matter - these are reorganized within the hierstat.R script to match genetic data. There are also several sanity checks (`stopifnot`) in the hierfstat.R script regarding sample set and order.
+1. If populations are discrete, create a file with two columns - the first is sample names (same as in the unfiltered VCF), the second is a **numerical** population ID that will be used for hierfstat. Column names are arbitrary but must be included. In these cases use the --discrete flag to point to the file when starting the pipeline. Sample order does not matter - these are reorganized within the hierstat.R script to match genetic data. There are also several sanity checks (`stopifnot`) in the hierfstat.R script regarding sample set and order.
 
 1. See Usage below to start the pipeline
 
