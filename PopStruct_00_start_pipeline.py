@@ -2,25 +2,28 @@
 
 Help
 ----
-apptainer exec -B "$HOME,/scratch:/scratch" $sif \
-  conda run -n pop_struct \
-  python $HOME/pop_struct/PopStruct_00_start_pipeline.py
+In the following command, "/scratch:/scratch" is an upper directory relative to OUTDIR
+
+  apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+    conda run -n pop_struct \
+    python $HOME/pop_struct/PopStruct_00_start_pipeline.py -h
 
 Usage
 -----
-#python PopStruct_00_start_pipeline.py --vcf VCF -o OUTDIR [-h] [--discrete SAMP_TO_POP]
-module load apptainer
+In the following command, "/scratch:/scratch" is an upper directory relative to OUTDIR
 
-sif=$HOME/pop_struct/population-structure.sif
-
-jobfile=$(
-  apptainer exec -B "$HOME,/scratch:/scratch" $sif \
-    conda run -n pop_struct \
-    python $HOME/pop_struct/PopStruct_00_start_pipeline.py --vcf VCF -o OUTDIR [-h] [--discrete SAMP_TO_POP] \
-)
-
-cd $(dirname $jobfile) && sbatch $jobfile
-
+  module load apptainer
+  
+  sif=$HOME/pop_struct/population-structure.sif
+  
+  jobfile=$(
+    apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+      conda run -n pop_struct \
+      python $HOME/pop_struct/PopStruct_00_start_pipeline.py --vcf VCF -o OUTDIR [-h] [--discrete SAMP_TO_POP] \
+  )
+  
+  cd $(dirname $jobfile) && sbatch $jobfile
+  
 
 
 """
@@ -32,9 +35,12 @@ import PopStruct_01_filter_vcf
 
 
 def parse_command():
-    parser = argparse.ArgumentParser(description="RepAdapt population structure pipeline.",
-                                     add_help=False,
-                                     formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+      description="RepAdapt population structure pipeline.",
+      add_help=False,
+      formatter_class=argparse.RawTextHelpFormatter,
+      
+    )
     
     requiredNAMED = parser.add_argument_group('required arguments')
 
