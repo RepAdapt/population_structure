@@ -4,19 +4,19 @@ Input VCF assumed to be filtered for missing individuals and missing data.
 
 Usage
 -----
-#python PopStruct_02_impute_filter_thin.py vcf output_path is_discrete
-module load apptainer
-
-sif=$HOME/pop_struct/population-structure.sif
-
-jobfile=$(
-    apptainer exec -B "$HOME/pop_struct,/scratch:/scratch" $sif \
-        conda run -n pop_struct \
-        python PopStruct_02_impute_filter_thin.py vcf output_path is_discrete
-)
-
-cd $(dirname $jobfile) && sbatch $jobfile
-
+In the following command, "/scratch:/scratch" is an upper directory relative to output_path
+    module load apptainer
+    
+    sif=$HOME/pop_struct/population-structure.sif
+    
+    jobfile=$(
+        apptainer exec -B "$HOME/pop_struct,/scratch:/scratch" $sif \
+            conda run -n pop_struct \
+            python PopStruct_02_impute_filter_thin.py vcf output_path is_discrete
+    )
+    
+    cd $(dirname $jobfile) && sbatch $jobfile
+    
 Paramters
 ---------
 vcf : Path
