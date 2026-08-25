@@ -103,7 +103,7 @@ echo LOSTRUCT
 
 apptainer exec -B "$HOME/pop_struct,{outdir}:{outdir}" $sif \
     env R_LIBS_USER="" R_LIBS="" \
-    conda run -n lea_bigsnpr \
+    conda run -n lostruct \
     Rscript $HOME/pop_struct/lostruct.R {basename}_imputed_maf-filtered.txt
 
 date
