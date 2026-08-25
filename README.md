@@ -77,21 +77,21 @@ After starting the pipeline (see Usage), the following will be executed (submitt
 
 # Usage
 
-- In the following command, `/scratch` is the output directory (or a parent of the output directory).
-    - Just paste your output directory twice for your usage (`/path/to/outdir:/path/to/outdir`)
-    - You only have to specify this upon launch of `PopStruct_00_start_pipeline.py` and the pipeline will dynamically infer this for remaining commands
 ```
 conda activate pop_struct
 usage (see this section for more info about binding directories: To start the pipeline run the following):
 
     sif=$HOME/pop_struct/population-structure.sif
+
+    OUTDIR=/path/to/output/directory
+    VCF=/path/to/vcf[.gz]
       
     jobfile=$(
-        apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+        apptainer exec -B "$HOME,$OUTDIR:$OUTDIR" $sif \
           conda run -n pop_struct \
           python $HOME/pop_struct/PopStruct_00_start_pipeline.py \
-            --vcf VCF \
-            -o OUTDIR \
+            --vcf $VCF \
+            --output_directory $OUTDIR \
             [--discrete SAMP_TO_POP]\
     )
     
