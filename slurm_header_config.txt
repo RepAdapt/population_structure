@@ -2,5 +2,7 @@
 # eg
 # #SBATCH --partition=general
 # #SBATCH --qos=general
+# #SBATCH --mail-user=your_email@wherever.com
+# #SBATCH --mail-type=END,FAIL
 #
 # lines starting with #SBATCH (not '# #SBATCH') will be used
