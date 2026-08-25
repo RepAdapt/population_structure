@@ -40,8 +40,8 @@ def parse_command():
     parser = argparse.ArgumentParser(
       description="""RepAdapt population structure pipeline.
 
-Usage:
-------
+Usage (see repo README for path binding):
+-----------------------------------------
     sif=$HOME/pop_struct/population-structure.sif
       
     jobfile=$(
