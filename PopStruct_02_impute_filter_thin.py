@@ -35,6 +35,8 @@ the basename of the vcf file (eg basename.vcf) is used as a prefix for output fi
 from pythonimports import *
 
 def main(vcf, output_path, is_discrete, threads=32):
+    output_path = return op.abspath(outdir)  # in case it's a relative path
+
     if not vcf.endswith('.vcf'):
         raise Exception('Input VCF must be uncompressed (and end with .vcf)')
 
@@ -50,7 +52,7 @@ def main(vcf, output_path, is_discrete, threads=32):
 #conda activate hierfstat
 #Rscript $HOME/pop_struct/hierfstat.R {basename}_imputed_maf-filtered.txt {is_discrete}
 cd {output_path}
-apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+apptainer exec -B "$HOME,{output_path}:{output_path}" $sif \
     conda run -n hierfstat \
     Rscript $HOME/pop_struct/hierfstat.R {basename}_imputed_maf-filtered.txt {is_discrete}
 
@@ -73,15 +75,11 @@ echo PLINK
 
 cd {output_path}
 
-#source $HOME/pop_struct/conda_init.sh
-#conda activate lea_bigsnpr
-#plink --vcf {vcf} --make-bed --out {basename} --keep-allele-order --allow-extra-chr
-
 module load apptainer
 
 sif=$HOME/pop_struct/population-structure.sif
 
-apptainer exec -B "$HOME/pop_struct,/scratch:/scratch" $sif \
+apptainer exec -B "$HOME/pop_struct,{output_path}:{output_path}" $sif \
     conda run -n lea_bigsnpr \
     plink --vcf {vcf} --make-bed --out {basename} --keep-allele-order --allow-extra-chr --set-missing-var-ids @:# --double-id
 date
@@ -90,7 +88,7 @@ date
 echo IMPUTE
 
 #Rscript $HOME/pop_struct/LEA_smnf_impute.R {vcf} {output_path} {threads}
-apptainer exec -B "$HOME/pop_struct,/scratch:/scratch" $sif \
+apptainer exec -B "$HOME/pop_struct,{output_path}:{output_path}" $sif \
     env R_LIBS_USER="" R_LIBS="" \
     conda run --no-capture-output -n lea_bigsnpr \
     Rscript $HOME/pop_struct/LEA_smnf_impute.R {vcf} {output_path} {threads}
@@ -103,7 +101,7 @@ echo LOSTRUCT
 #conda activate lostruct
 #Rscript $HOME/pop_struct/lostruct.R {basename}_imputed_maf-filtered.txt
 
-apptainer exec -B "$HOME/pop_struct,/scratch:/scratch" $sif \
+apptainer exec -B "$HOME/pop_struct,{output_path}:{output_path}" $sif \
     env R_LIBS_USER="" R_LIBS="" \
     conda run -n lea_bigsnpr \
     Rscript $HOME/pop_struct/lostruct.R {basename}_imputed_maf-filtered.txt
