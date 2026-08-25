@@ -50,7 +50,7 @@ def parse_command():
           python $HOME/pop_struct/PopStruct_00_start_pipeline.py \\
             --vcf VCF \\
             -o OUTDIR \\
-            [--discrete SAMP_TO_POP]\
+            [--discrete SAMP_TO_POP] \\
     )
     
     cd $(dirname $jobfile) && sbatch $jobfile
