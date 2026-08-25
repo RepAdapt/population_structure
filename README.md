@@ -54,17 +54,7 @@ After starting the pipeline (see Usage), the following will be executed (submitt
 
 1. If populations are discrete, create a file with two columns - the first is sample names (same as in the unfiltered VCF), the second is a **numerical** population ID that will be used for hierfstat. In these cases use the --discrete flag to point to the file when starting the pipeline. Sample order does not matter - these are reorganized within the hierstat.R script to match genetic data. There are also several sanity checks (`stopifnot`) in the hierfstat.R script regarding sample set and order.
 
-1. To start the pipeline run the following
-
-    ```bash
-    # In the following command, "/scratch" is the output directory (or a parent of the output directory).
-        # Just paste your output directory twice for your usage (/path/to/outdir:/path/to/outdir)
-        # You only have to specify this upon launch of PopStruct_00_start_pipeline.py and the pipeline will dynamically infer this for remaining commands
-    module load apptainer
-    apptainer exec -B "$HOME,/scratch:/scratch" $sif \
-    conda run -n pop_struct \
-    python $HOME/pop_struct/PopStruct_00_start_pipeline.py -h
-    ```
+1. See Usage below to start the pipeline
 
     The pipeline will:
 
@@ -87,6 +77,9 @@ After starting the pipeline (see Usage), the following will be executed (submitt
 
 # Usage
 
+- In the following command, `/scratch` is the output directory (or a parent of the output directory).
+    - Just paste your output directory twice for your usage (`/path/to/outdir:/path/to/outdir`)
+    - You only have to specify this upon launch of `PopStruct_00_start_pipeline.py` and the pipeline will dynamically infer this for remaining commands
 ```
 conda activate pop_struct
 usage (see this section for more info about binding directories: To start the pipeline run the following):
