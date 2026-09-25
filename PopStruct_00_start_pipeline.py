@@ -5,11 +5,16 @@ Usage
 In the following command, "/scratch" is the output directory (or a parent of the OUTDIR directory)
 
   module load apptainer
+
+  unset PYTHONPATH
+  unset CONDA_PREFIX
+  unset CONDA_DEFAULT_ENV
+  unset CONDA_SHLVL
   
   sif=$HOME/pop_struct/population-structure.sif
   
   jobfile=$(
-    apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+    apptainer exec --env PYTHONPATH=/pythonimports -B "$HOME,/scratch:/scratch" $sif \
       conda run -n pop_struct \
       python $HOME/pop_struct/PopStruct_00_start_pipeline.py --vcf VCF -o OUTDIR [-h] [--discrete SAMP_TO_POP] \
   )
@@ -22,9 +27,14 @@ In the following command, "/scratch" is the output directory (or a parent of the
 
   module load apptainer
 
+  unset PYTHONPATH
+  unset CONDA_PREFIX
+  unset CONDA_DEFAULT_ENV
+  unset CONDA_SHLVL
+  
   sif=$HOME/pop_struct/population-structure.sif
 
-  apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+  apptainer exec --env PYTHONPATH=/pythonimports -B "$HOME,/scratch:/scratch" $sif \
     conda run -n pop_struct \
     python $HOME/pop_struct/PopStruct_00_start_pipeline.py -h
 
@@ -42,10 +52,17 @@ def parse_command():
 
 Usage (see repo README for path binding):
 -----------------------------------------
+    module load apptainer
+
     sif=$HOME/pop_struct/population-structure.sif
-      
+    
+    unset PYTHONPATH
+    unset CONDA_PREFIX
+    unset CONDA_DEFAULT_ENV
+    unset CONDA_SHLVL
+    
     jobfile=$(
-        apptainer exec -B "$HOME,/scratch:/scratch" $sif \\
+        apptainer exec --env PYTHONPATH=/pythonimports -B "$HOME,/scratch:/scratch" $sif \\
           conda run -n pop_struct \\
           python $HOME/pop_struct/PopStruct_00_start_pipeline.py \\
             --vcf VCF \\
@@ -92,13 +109,16 @@ to **numeric** population IDs (column 2). Column names are arbitrary but must be
     if args.vcf:
         if not op.exists(args.vcf):
             raise Exception(f'The vcf does not exist in the specified path: {args.vcf}')
+        args.vcf = op.realpath(args.vcf)
         # if not op.exists(f'{vcf}.tbi'):
         #     raise Exception(f'The vcf index does not exist: {vcf}.tbi')
     if not op.exists(args.outdir):
         os.makedirs(args.outdir, exist_ok=True)
+        args.outdir = op.realpath(args.outdir)
 
     if args.samp_to_pop != 'not_discrete':
         assert op.exists(args.samp_to_pop)
+        args.samp_to_pop = op.realpath(args.samp_to_pop)
 
     pkldump(args, f'{args.outdir}/pipeline_args.pkl')
 

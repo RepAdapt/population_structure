@@ -10,7 +10,7 @@ In the following command, "/scratch:/scratch" is an upper directory relative to 
     sif=$HOME/pop_struct/population-structure.sif
     
     jobfile=$(
-        apptainer exec -B "$HOME/pop_struct,/scratch:/scratch" $sif \
+        apptainer exec --cleanenv -B "$HOME/pop_struct,/scratch:/scratch" $sif \
             conda run -n pop_struct \
             python PopStruct_02_impute_filter_thin.py vcf outdir is_discrete
     )
@@ -71,6 +71,14 @@ date
 hostname
 date
 
+unset PYTHONPATH
+unset CONDA_PREFIX
+unset CONDA_DEFAULT_ENV
+unset CONDA_SHLVL
+unset CONDA_EXE
+unset CONDA_PREFIX
+unset CONDA_PREFIX_1
+
 echo PLINK
 
 cd {outdir}
@@ -79,7 +87,7 @@ module load apptainer
 
 sif=$HOME/pop_struct/population-structure.sif
 
-apptainer exec -B "$HOME/pop_struct,{outdir}:{outdir}" $sif \
+apptainer exec --cleanenv -B "$HOME/pop_struct,{outdir}:{outdir}" $sif \
     conda run -n lea_bigsnpr \
     plink --vcf {vcf} --make-bed --out {basename} --keep-allele-order --allow-extra-chr --set-missing-var-ids @:# --double-id
 date
@@ -88,7 +96,7 @@ date
 echo IMPUTE
 
 #Rscript $HOME/pop_struct/LEA_smnf_impute.R {vcf} {outdir} {threads}
-apptainer exec -B "$HOME/pop_struct,{outdir}:{outdir}" $sif \
+apptainer exec --cleanenv -B "$HOME/pop_struct,{outdir}:{outdir}" $sif \
     env R_LIBS_USER="" R_LIBS="" \
     conda run --no-capture-output -n lea_bigsnpr \
     Rscript $HOME/pop_struct/LEA_smnf_impute.R {vcf} {outdir} {threads}
@@ -101,7 +109,7 @@ echo LOSTRUCT
 #conda activate lostruct
 #Rscript $HOME/pop_struct/lostruct.R {basename}_imputed_maf-filtered.txt
 
-apptainer exec -B "$HOME/pop_struct,{outdir}:{outdir}" $sif \
+apptainer exec --cleanenv -B "$HOME/pop_struct,{outdir}:{outdir}" $sif \
     env R_LIBS_USER="" R_LIBS="" \
     conda run -n lostruct \
     Rscript $HOME/pop_struct/lostruct.R {basename}_imputed_maf-filtered.txt

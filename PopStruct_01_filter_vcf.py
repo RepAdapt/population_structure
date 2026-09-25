@@ -12,7 +12,7 @@ In the following command, "/scratch:/scratch" is an upper directory relative to 
     sif=$HOME/pop_struct/population-structure.sif
     
     jobfile=$(
-        apptainer exec -B "$HOME,/scratch:/scratch" $sif \
+        apptainer exec --cleanenv --env PYTHONPATH=/pythonimports -B "$HOME,/scratch:/scratch" $sif \
             conda run -n pop_struct \
             python $HOME/pop_struct/PopStruct_01_bcftools_filter.py vcf outdir is_discrete
     )
@@ -31,11 +31,11 @@ is_discrete : 'not_discrete' | Path
     names are arbitrary but must be included in the file.
     If is_discrete is set to 'not_discrete' : hierfstat is not run/
 
-TODO
-----
-- additional SBATCH flags - including email, partition, qos
-- change to container instead of conda
-
+Notes
+-----
+- "bcftools annotate -x INFO/F_MISSING -Ou" is used to avoid an error if the vcf already has the F_MISSING field.
+    - this removes the F_MISSING field right before readding it. If the field is missing from input vcf, trying to
+      remove it does not trigger an error
 """
 from pythonimports import *
 
@@ -61,6 +61,12 @@ def main(vcf, outdir, is_discrete):
 hostname
 date
 
+unset PYTHONPATH
+unset CONDA_SHLVL
+unset CONDA_EXE
+unset CONDA_PREFIX
+unset CONDA_PREFIX_1
+
 module load apptainer
 
 sif=$HOME/pop_struct/population-structure.sif
@@ -69,7 +75,7 @@ cd {outdir}
 
 echo COMPUTE_IND_MISSINGNESS
 
-apptainer exec -B "$HOME,{outdir}:{outdir}" $sif \
+apptainer exec --cleanenv -B "$HOME,{outdir}:{outdir}" $sif \
     conda run -n bcftools \
     bcftools stats -s - {vcf} \
     | awk '/^PSC/ {{nMissing=$14; total=$4+$5+$6+$14; miss=(total? nMissing/total : 0); if (miss<=0.10) print $3}}' \
@@ -81,14 +87,15 @@ date
 echo FILTER_INDS
 
 # keep only SNPs with a min and max number of alleles = 2
-apptainer exec -B "$HOME,{outdir}:{outdir}" $sif \
+apptainer exec --cleanenv -B "$HOME,{outdir}:{outdir}" $sif \
     bash -c '
     source /opt/conda/etc/profile.d/conda.sh
     conda activate bcftools
     
     bcftools view -S keep.samples -m2 -M2 -v snps -Ou {vcf} \
+    | bcftools annotate -x INFO/F_MISSING -Ou \
     | bcftools +fill-tags -Ou -- -t F_MISSING \
-    | bcftools view -i "F_MISSING<=0.10" -Ou -o {job}.vcf
+    | bcftools view -i "F_MISSING<=0.10" -Ov -o {job}.vcf
 '
 
 # tabix -p vcf {job}.vcf
@@ -99,7 +106,7 @@ date
 echo SUBMIT_IMPUTATION
 
 jobfile=$(
-  apptainer exec -B "$HOME/pop_struct,{outdir}:{outdir}" $sif \
+  apptainer exec --cleanenv --env PYTHONPATH=/pythonimports -B "$HOME/pop_struct,{outdir}:{outdir}" $sif \
     conda run -n pop_struct \
     python $HOME/pop_struct/PopStruct_02_impute_filter_thin.py {job}.vcf {outdir} {is_discrete} | grep '\.sh$' | tail -n1
 )
