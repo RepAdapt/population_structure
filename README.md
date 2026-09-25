@@ -78,8 +78,14 @@ After starting the pipeline (see Usage), the following will be executed (submitt
 # Usage
 
 ```
-conda activate pop_struct
 usage (see this section for more info about binding directories: To start the pipeline run the following):
+    
+    module load apptainer
+
+    unset PYTHONPATH
+    unset CONDA_PREFIX
+    unset CONDA_DEFAULT_ENV
+    unset CONDA_SHLVL
 
     sif=$HOME/pop_struct/population-structure.sif
 
@@ -87,7 +93,7 @@ usage (see this section for more info about binding directories: To start the pi
     VCF=/path/to/vcf[.gz]
       
     jobfile=$(
-        apptainer exec -B "$HOME,$OUTDIR:$OUTDIR" $sif \
+        apptainer exec --cleanenv --env PYTHONPATH=/pythonimports -B "$HOME,$OUTDIR:$OUTDIR" $sif \
           conda run -n pop_struct \
           python $HOME/pop_struct/PopStruct_00_start_pipeline.py \
             --vcf $VCF \
